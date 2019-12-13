@@ -15,6 +15,7 @@ yum install -y expect
 
 spawn "vue init webpack"
 
+expect "Generate project" { send "\n" }
 expect "Project name" { send "\n" }
 expect "Project description" { send "\n" }
 expect "Author" { send "\n" }
@@ -29,6 +30,7 @@ expect "Should we run" { send "\n" }
 interact
 
 EOF
+echo "Vue installation completed"
 #vue init webpack myvue-project
 #cd myvue-project
 #npm run build
