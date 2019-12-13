@@ -32,8 +32,8 @@ interact
 EOF
 echo "Vue installation completed"
 #vue init webpack myvue-project
-#cd myvue-project
-#npm run build
+cd myvue-project
+npm run build
 # Install nginx
 yum install -y epel-release
 yum install -y nginx
