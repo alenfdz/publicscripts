@@ -9,7 +9,26 @@ npm install -g vue-cli
 # Create project folder
 mkdir -p /usr/public_html
 cd /usr/public_html
-#sudo yum install -y expect
+#Install expect and install vue
+yum install -y expect
+/usr/bin/expect<<EOF
+
+spawn "vue init webpack"
+
+expect "Project name" { send "\n" }
+expect "Project description" { send "\n" }
+expect "Author" { send "\n" }
+expect "Vue build" { send "\n" }
+expect "Install vue-router?" { send "\n" }
+expect "Use ESLint to lint your code?" { send "y\r" }
+expect "Pick an ESLint preset" { send "\n" }
+expect "Set up unit tests" { send "n\r" }
+expect "Setup e2e tests with Nightwatch?" { send "n\r" }
+expect "Should we run" { send "\n" }
+
+interact
+
+EOF
 #vue init webpack myvue-project
 #cd myvue-project
 #npm run build
