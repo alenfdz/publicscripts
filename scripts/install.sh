@@ -11,25 +11,28 @@ mkdir -p /usr/public_html
 cd /usr/public_html
 #Install expect and install vue
 yum install -y expect
-/usr/bin/expect<<EOF
+curl -O https://raw.githubusercontent.com/alenfdz/publicscripts/master/scripts/vue.exp
+./vue.exp
 
-spawn /usr/bin/vue init webpack
+#/usr/bin/expect<<EOF
 
-expect "Generate project" { send "\n" }
-expect "Project name" { send "\n" }
-expect "Project description" { send "\n" }
-expect "Author" { send "\n" }
-expect "Vue build" { send "\n" }
-expect "Install vue-router?" { send "\n" }
-expect "Use ESLint to lint your code?" { send "y\r" }
-expect "Pick an ESLint preset" { send "\n" }
-expect "Set up unit tests" { send "n\r" }
-expect "Setup e2e tests with Nightwatch?" { send "n\r" }
-expect "Should we run" { send "\n" }
+#spawn /usr/bin/vue init webpack
 
-interact
+#expect "Generate project" { send "\n" }
+#expect "Project name" { send "\n" }
+#expect "Project description" { send "\n" }
+#expect "Author" { send "\n" }
+#expect "Vue build" { send "\n" }
+#expect "Install vue-router?" { send "\n" }
+#expect "Use ESLint to lint your code?" { send "y\r" }
+#expect "Pick an ESLint preset" { send "\n" }
+#expect "Set up unit tests" { send "n\r" }
+#expect "Setup e2e tests with Nightwatch?" { send "n\r" }
+#expect "Should we run" { send "\n" }
 
-EOF
+#interact
+
+#EOF
 echo "Vue installation completed"
 #vue init webpack myvue-project
 cd myvue-project
