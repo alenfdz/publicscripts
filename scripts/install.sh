@@ -12,6 +12,7 @@ cd /usr/public_html
 #Install expect and install vue
 yum install -y expect
 curl -O https://raw.githubusercontent.com/alenfdz/publicscripts/master/scripts/vue.exp
+chmod u+x vue.exp
 ./vue.exp
 
 #/usr/bin/expect<<EOF
