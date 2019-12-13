@@ -1,5 +1,7 @@
 #!/usr/bin/expect
 
+set timeout -1
+
 spawn /usr/bin/vue init webpack
 
 expect "Generate project" { send "\n" }
@@ -13,5 +15,6 @@ expect "Pick an ESLint preset" { send "\n" }
 expect "Set up unit tests" { send "n\r" }
 expect "Setup e2e tests with Nightwatch?" { send "n\r" }
 expect "Should we run" { send "\n" }
+sleep 400
 
 interact
