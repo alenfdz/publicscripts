@@ -13,7 +13,7 @@ cd /usr/public_html
 yum install -y expect
 /usr/bin/expect<<EOF
 
-spawn "vue init webpack"
+spawn /usr/bin/vue init webpack
 
 expect "Generate project" { send "\n" }
 expect "Project name" { send "\n" }
