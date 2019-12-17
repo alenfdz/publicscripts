@@ -38,6 +38,7 @@ echo "Vue installation completed"
 #vue init webpack myvue-project
 cd myvue-project
 npm run build
+npm install
 # Install nginx
 yum install -y epel-release
 yum install -y nginx
