@@ -41,4 +41,7 @@ npm run build
 # Install nginx
 yum install -y epel-release
 yum install -y nginx
+# Prepare conf files for nginx
+curl -O https://raw.githubusercontent.com/alenfdz/publicscripts/master/scripts/nginx.conf
+mv nginx.conf /etc/nginx/
 systemctl start nginx
