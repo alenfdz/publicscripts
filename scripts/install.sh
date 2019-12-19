@@ -4,7 +4,7 @@ github=https://raw.githubusercontent.com/alenfdz/publicscripts/master
 webdir=/usr/public_html
 databaseid=https://mytestdb01.documents.azure.com:443/
 containerid=cDgEOuF2KGkFvYi1Gt4zdS8BrqDnuztsRKDBbVAq0CMuQGWcJlj58KdEKzBlUXmJbhGaK0UHjKI5LrIUIJIWMw==
-appurl=mytestapprogueone70.eastus.cloudapp.azure.com
+appurl=http://mytestapprogueone70.eastus.cloudapp.azure.com:3000
 # Install node.js
 cd /tmp
 curl -O https://rpm.nodesource.com/setup_10.x
@@ -23,14 +23,13 @@ chmod u+x vue.exp
 ./vue.exp
 echo "Vue installation completed"
 #vue init webpack myvue-project
-cd myvue-project
 npm install
 # Install nginx
 yum install -y epel-release
 yum install -y nginx
 # Prepare conf files for nginx
 curl -O $gitub/scripts/nginx.conf
-mv nginx.conf /etc/nginx/
+cp nginx.conf /etc/nginx/
 systemctl start nginx
 # Install dependencies for vue
 sudo npm i bootstrap-vue@2.0.0-rc.7 bootstrap@4.1.0
