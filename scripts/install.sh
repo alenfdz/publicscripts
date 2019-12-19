@@ -72,3 +72,4 @@ curl -O $github/node/readings.js
 mv readings.js $webdir/src/node-server/readings/models/
 curl -O $github/node/myReadings.js
 mv myReadings.js $webdir/src/node-server/readings/routes/
+npm start &
