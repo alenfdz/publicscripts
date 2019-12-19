@@ -28,7 +28,7 @@ npm install
 yum install -y epel-release
 yum install -y nginx
 # Prepare conf files for nginx
-curl -O $gitub/scripts/nginx.conf
+curl -O $github/scripts/nginx.conf
 cp nginx.conf /etc/nginx/
 systemctl start nginx
 # Install dependencies for vue
