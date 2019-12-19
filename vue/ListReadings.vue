@@ -52,7 +52,7 @@ export default {
 
   },
   mounted(){
-    axios.get('http://40.117.250.255:53000/').then(response => (this.readings = response.data))
+    axios.get('<<APPURL>>').then(response => (this.readings = response.data))
     //this.getReadings();
   }
 }

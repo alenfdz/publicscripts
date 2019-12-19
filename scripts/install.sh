@@ -4,7 +4,7 @@ github=https://raw.githubusercontent.com/alenfdz/publicscripts/master
 webdir=/usr/public_html
 databaseid=https://mytestdb01.documents.azure.com:443/
 containerid=cDgEOuF2KGkFvYi1Gt4zdS8BrqDnuztsRKDBbVAq0CMuQGWcJlj58KdEKzBlUXmJbhGaK0UHjKI5LrIUIJIWMw==
-
+appurl=mytestapprogueone70.eastus.cloudapp.azure.com
 # Install node.js
 cd /tmp
 curl -O https://rpm.nodesource.com/setup_10.x
@@ -47,6 +47,7 @@ mv index.js $webdir/src/router/
 curl -O $github/vue/Hello.vue
 mv Hello.vue $webdir/src/components/
 curl -O $github/vue/ListReadings.vue
+sed -i "s+<<APPURL>>+$appurl+g" ListReadings.vue
 mv ListReadings.vue $webdir/src/components/
 curl -O $github/vue/api.js
 mv api.js $webdir/src/
