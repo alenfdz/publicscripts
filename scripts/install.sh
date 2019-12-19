@@ -43,11 +43,11 @@ mv App.vue $webdir/src/
 curl -O $github/vue/main.js
 mv main.js $webdir/src/
 curl -O $github/vue/index.js
-mv router.js $webdir/src/router/
+mv index.js $webdir/src/router/
 curl -O $github/vue/Hello.vue
 mv Hello.vue $webdir/src/components/
 curl -O $github/vue/ListReadings.vue
-mv PostsManager.vue $webdir/src/components/
+mv ListReadings.vue $webdir/src/components/
 curl -O $github/vue/api.js
 mv api.js $webdir/src/
 mkdir $webdir/src/node-server
@@ -61,7 +61,7 @@ cd ./readings
 npm install
 mkdir ./models
 mkdir ./routes
-curl -O $github/node/App.js
+curl -O $github/node/app.js
 mv app.js $webdir/src/node-server/readings/
 curl -O $github/node/config.js
 #Inject values for DB
