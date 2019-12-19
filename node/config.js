@@ -1,7 +1,7 @@
 const config = {};
 
-config.host = "https://mytestskariff.documents.azure.com:443/";
-config.authKey = "WrPwj7WM9gX4RCHW7GaivOOb49pvToEtOOkSfgMxCMzPm0JxqWbOAgAiIw3413caBHN50bMbqpSeVuSo63NMtQ=="
+config.host = "<<DATABASEID>>";
+config.authKey = "<<CONTAINERID>>"
 config.databaseId = "thingsdatabase";
 config.containerId = "nodeitems";
 
