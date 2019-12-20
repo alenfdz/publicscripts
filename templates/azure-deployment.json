@@ -1,0 +1,283 @@
+{
+
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "variables": {
+        "appSku": "[variables(concat('sizing-', parameters('deploymentType'))).sku]",
+        "appWorkerSize": "[variables(concat('sizing-', parameters('deploymentType'))).workerSize]",
+        "appStorageAccountSize": "[variables(concat('sizing-', parameters('deploymentType'))).storageAccountSize]",
+        "sizing-dev":{
+            "sku": "S1",
+            "workerSize": "1",
+            "storageAccountSize": "Standard_LRS",
+            "insights": "no",
+            "enableAutomaticFailover": false,
+            "enableMultipleWriteLocations": false,
+            "isVirtualNetworkFilterEnabled": false,
+            "isZoneRedundant": false,
+            "storageSku": "Standard_LRS",
+            "storageTier": "Standard",
+            "accessTier": "cool"
+        },
+        "sizing-prod":{
+            "sku": "EP1",
+            "workerSize": "2",
+            "storageAccountSize": "Premium_LRS",
+            "insights": "yes",
+            "enableAutomaticFailover": true,
+            "enableMultipleWriteLocations": true,
+            "isVirtualNetworkFilterEnabled": true,
+            "isZoneRedundant": true,
+            "storageSku": "Standard_GRS",
+            "storageTier": "Premium",
+            "accessTier": "hot"
+        },
+        "functionAppName": "[parameters('appName')]",
+        "queueName": "js-queue-items",
+        "prodFunctionName": "producer",
+        "consFunctionName": "consumer",
+        "hostingPlanName": "[concat(parameters('appName'), '-plan')]",
+        "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'functions')]",
+        "applicationInsightsName": "[concat(parameters('appName'), '-insights')]",
+        "databaseConnectionString": "[concat(parameters('databaseAccountsName'), '_DOCUMENTDB')]"
+    },
+
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2018-11-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "kind": "Storage",
+            "sku": {
+                "name": "[variables('appStorageAccountSize')]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-11-01",
+            "name": "[variables('hostingPlanName')]",
+            "location": "[parameters('location')]",
+            "sku":{
+                "name": "[variables('appSku')]"
+            },
+            "properties": {
+                "workerSize": "[variables('appWorkerSize')]",
+                "numberOfWorkers": 1
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "name": "[parameters('queueStorageAccountsName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[variables(concat('sizing-', parameters('deploymentType'))).storageSku]",
+                "tier": "[variables(concat('sizing-', parameters('deploymentType'))).storageTier]"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "[variables(concat('sizing-', parameters('deploymentType'))).accessTier]"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2019-04-01",
+            "name": "[concat(parameters('queueStorageAccountsName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('queueStorageAccountsName'))]"
+            ],
+            "sku": {
+                "name": "[variables(concat('sizing-', parameters('deploymentType'))).storageSku]"
+            },
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            }
+        },        
+        {
+            "type": "Microsoft.DocumentDB/databaseAccounts",
+            "apiVersion": "2019-08-01",
+            "name": "[parameters('databaseAccountsName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "defaultExperience": "Azure Cosmos DB for MongoDB API",
+                "hidden-cosmos-mmspecial": ""
+            },
+            "kind": "GlobalDocumentDB",
+            "properties": {
+                "enableAutomaticFailover": "[variables(concat('sizing-', parameters('deploymentType'))).enableAutomaticFailover]",
+                "enableMultipleWriteLocations": "[variables(concat('sizing-', parameters('deploymentType'))).enableMultipleWriteLocations]",
+                "isVirtualNetworkFilterEnabled": "[variables(concat('sizing-', parameters('deploymentType'))).isVirtualNetworkFilterEnabled]",
+                "virtualNetworkRules": [],
+                "disableKeyBasedMetadataWriteAccess": false,
+                "databaseAccountOfferType": "Standard",
+                "consistencyPolicy": {
+                    "defaultConsistencyLevel": "Session",
+                    "maxIntervalInSeconds": 5,
+                    "maxStalenessPrefix": 100
+                },
+                "locations": [
+                    {
+                        "locationName": "West Europe",
+                        "provisioningState": "Succeeded",
+                        "failoverPriority": 0,
+                        "isZoneRedundant": "[variables(concat('sizing-', parameters('deploymentType'))).isZoneRedundant]"
+                    }
+                ],
+                "capabilities": []
+            }
+        },
+        {
+            "apiVersion": "2018-11-01",
+            "type": "Microsoft.Web/sites",
+            "name": "[variables('functionAppName')]",
+            "location": "[parameters('location')]",
+            "kind": "functionapp",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccountsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('queueStorageAccountsName'))]"
+            ],
+            "properties": {
+                "name": "[variables('functionAppName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+                "clientAffinityEnabled": false,
+                "hostingEnvironment": "[parameters('hostingEnvironment')]",
+                "siteConfig": {
+                    "alwaysOn": true,
+                    "cors": {
+                        "allowedOrigins": [
+                            "*"
+                        ]
+                    },
+                    "appSettings": [
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~1"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2018-11-01').keys[0].value,';')]"
+                        },
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2018-11-01').keys[0].value,';')]"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "~10"
+                        }
+                    ]
+                }
+            }
+        },
+            {
+                "apiVersion": "2018-11-01",
+                "name": "[concat(variables('functionAppName'),'/', variables('prodFunctionName'))]",
+                "type": "Microsoft.Web/sites/functions",
+                "dependsOn": [
+                    "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+                ],
+                "properties": {
+                    "config": {
+                        "bindings": [
+                            {
+                                "authLevel": "anonymous",
+                                "type": "httpTrigger",
+                                "direction": "in",
+                                "name": "req",
+                                "methods": [
+                                    "get",
+                                    "post"
+                                ]
+                            },
+                            {
+                                "type": "http",
+                                "direction": "out",
+                                "name": "res"
+                            },
+                            {
+                                "type": "queue",
+                                "name": "outputQueueItems",
+                                "queueName": "[variables('queueName')]",
+                                "connection": "AzureWebJobsStorage",
+                                "direction": "out"
+                              }                            
+                        ]
+                    },
+                    "files": {
+                        "index.js": "module.exports = function (context, req, outputQueueItems) { \r\n\r\n context.log('Drive Gear Temperature Service triggered'); \r\n\r\n var items = []; \r\n\r\n var item = {}; \r\n\r\n if (req.body && req.body.readings) { \r\n\r\n req.body.readings.forEach(function(reading) { \r\n\r\n if(reading.temperature<=25) { \r\n\r\n reading.status = 'OK'; }  else if (reading.temperature<=50) { \r\n\r\n reading.status = 'CAUTION'; \r\n\r\n } else { \r\n\r\n reading.status = 'DANGER'; \r\n\r\n } \r\n\r\n context.log('Reading is ' + reading.status); \r\n\r\n item = { \r\n\r\n timestamp: reading.timestamp, \r\n\r\n gearId: reading.driveGearId, \r\n\r\n temperature: reading.temperature, \r\n\r\n reading: reading.status \r\n\r\n } \r\n\r\n /* context.bindings.outputQueueItem = 'Reading is ' + reading.status; */ \r\n\r\n items.push(item); \r\n\r\n }); \r\n\r\n context.bindings.outputQueueItems = items; \r\n\r\n context.res = { \r\n\r\n /* status: 200, Defaults to 200 */ \r\n\r\n body: { \r\n\r\n 'readings': req.body.readings  \r\n\r\n} \r\n\r\n }; \r\n\r\n } else { \r\n\r\n context.res = { \r\n\r\n status: 400, \r\n\r\n body: 'Please send an array of readings in the request body' \r\n\r\n }; \r\n\r\n } context.done(); \r\n\r\n };"
+                    }
+            }
+        },
+        {
+            "apiVersion": "2018-11-01",
+            "name": "[concat(variables('functionAppName'),'/', variables('consFunctionName'))]",
+            "type": "Microsoft.Web/sites/functions",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+            ],
+            "properties": {
+                "config": {
+                    "bindings": [
+                        {
+                          "name": "myQueueItem",
+                          "type": "queueTrigger",
+                          "direction": "in",
+                          "queueName": "[variables('queueName')]",
+                          "connection": "AzureWebJobsStorage"
+                        },
+                        {
+                          "type": "documentDB",
+                          "name": "outputDocument",
+                          "databaseName": "thingsdatabase",
+                          "collectionName": "nodeitems",
+                          "createIfNotExists": true,
+                          "connection": "[variables('databaseConnectionString')]",
+                          "direction": "out"
+                        }
+                    ]
+                },
+                "files": {
+                    "index.js": "module.exports = function (context, myQueueItem) { \r\n\r\n context.log('JavaScript queue trigger function processed work item', myQueueItem); \r\n\r\n context.bindings.myQueueItem = JSON.stringify({ \r\n\r\n id: context.bindings.myQueueItem.gearId + '-' + context.bindings.myQueueItem.timestamp, \r\n\r\n gearId: context.bindings.myQueueItem.gearId, \r\n\r\n temperature: context.bindings.myQueueItem.temperature, \r\n\r\n reading: context.bindings.myQueueItem.reading }); \r\n\r\n context.log('Item written to the database'); \r\n\r\n context.done(); \r\n\r\n };"
+                }
+        }
+    },        
+        {
+            "name": "[variables('applicationInsightsName')]",
+            "condition": "[equals(variables(concat('sizing-', parameters('deploymentType'))).insights,'yes')]",
+            "type": "Microsoft.Insights/components",
+            "location": "[parameters('location')]",
+            "apiVersion": "2014-04-01",
+            "kind": "other",
+            "properties": {
+                "applicationId": "[variables('applicationInsightsName')]"
+            }
+        }
+    ]
+}

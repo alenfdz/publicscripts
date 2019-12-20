@@ -1,17 +1,18 @@
 <template>
 <div>
-<h1>Todos ()</h1>
+<h1>Readings ()</h1>
 <table class="table table-bordered table-hover">
 <thead>
 <tr>
 <th>#</th>
-<th>Name</th>
-<th>Actions</th>
+<th>Id</th>
+<th>Temperature</th>
+<th>Reading</th>
 </tr>
 </thead>
 <tbody>
 
-<tr v-for="todo in todos" @click="selectTodo(todo)">
+<tr v-for="reading in readings" @click="selectReading(reading)">
 
 <th></th>
 
@@ -58,26 +59,7 @@ this.todos = data.data;
 this.numberOfProducts = data.count;
 
 });
-},
-deleteTodo(todo){
-
-apiService.deleteTodo(todo).then((r)=>{
-
-
-
-if(r.status === 204)
-{
-
-
-alert("Todo deleted");
-
-this.$router.go()
-
 }
-
-})
-
-},
 },
 
 mounted() {
