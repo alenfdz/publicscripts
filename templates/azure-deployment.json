@@ -2,7 +2,53 @@
 
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
+    "parameters": {
+        "hostingEnvironment": {
+            "type": "String",
+            "allowedValues": [
+                "linux",
+                "windows"
+            ]            
+        },
+        "deploymentType": {
+            "type": "string",
+            "defaultValue": "dev",
+            "allowedValues": [
+                "dev",
+                "prod"
+            ]
+        },
+        "appName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the app function."
+            }
+        },
+        "databaseAccountsName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the database."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "allowedValues":[
+                "eastus",
+                "westus"
+            ],
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "queueStorageAccountsName": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the storage account for the queue"
+            }
+        }
+    },
+
     "variables": {
         "appSku": "[variables(concat('sizing-', parameters('deploymentType'))).sku]",
         "appWorkerSize": "[variables(concat('sizing-', parameters('deploymentType'))).workerSize]",
