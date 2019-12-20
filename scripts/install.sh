@@ -1,6 +1,6 @@
 #!/bin/bash
 # Variables
-github=https://raw.githubusercontent.com/alenfdz/publicscripts/master
+github=$4
 webdir=/usr/public_html
 databaseid=$2
 containerid=$3
