@@ -347,7 +347,7 @@
                     ]
                 },
                 "files": {
-                    "index.js": "module.exports = function (context, myQueueItem) { \r\n\r\n context.log('JavaScript queue trigger function processed work item', myQueueItem); \r\n\r\n context.bindings.myQueueItem = JSON.stringify({ \r\n\r\n id: context.bindings.myQueueItem.gearId + '-' + context.bindings.myQueueItem.timestamp, \r\n\r\n gearId: context.bindings.myQueueItem.gearId, \r\n\r\n temperature: context.bindings.myQueueItem.temperature, \r\n\r\n reading: context.bindings.myQueueItem.reading }); \r\n\r\n context.log('Item written to the database'); \r\n\r\n context.done(); \r\n\r\n };"
+                    "index.js": "module.exports = function (context, myQueueItem) { \r\n\r\n context.log('JavaScript queue trigger function processed work item', myQueueItem); \r\n\r\n context.bindings.outputDocument = JSON.stringify({ \r\n\r\n id: context.bindings.myQueueItem.gearId + '-' + context.bindings.myQueueItem.timestamp, \r\n\r\n gearId: context.bindings.myQueueItem.gearId, \r\n\r\n temperature: context.bindings.myQueueItem.temperature, \r\n\r\n reading: context.bindings.myQueueItem.reading }); \r\n\r\n context.log('Item written to the database'); \r\n\r\n context.done(); \r\n\r\n };"
                 }
         }
     },        
