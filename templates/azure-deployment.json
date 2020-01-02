@@ -42,6 +42,48 @@
                 "description": "The size of the storage space for app function."
             }
         },
+        "storageSku": {
+            "type": "string",
+            "metadata": {
+                "description": "The size of the storage space for queue."
+            }
+        },
+        "storageTier": {
+            "type": "string",
+            "metadata": {
+                "description": "The tier of the storage for queue."
+            }
+        },
+        "accessTier": {
+            "type": "string",
+            "metadata": {
+                "description": "The access tier of the storage for queue."
+            }
+        },
+        "enableAutomaticFailover": {
+            "type": "string",
+            "metadata": {
+                "description": "Enable automatic failover for database."
+            }
+        },
+        "enableMultipleWriteLocations": {
+            "type": "string",
+            "metadata": {
+                "description": "Enable multiple write locations for database."
+            }
+        },
+        "isVirtualNetworkFilterEnabled": {
+            "type": "string",
+            "metadata": {
+                "description": "Enable Virtual network filter for database."
+            }
+        },
+        "isZoneRedundant": {
+            "type": "string",
+            "metadata": {
+                "description": "Zone redundancy for database."
+            }
+        },
         "databaseAccountsName": {
             "type": "string",
             "metadata": {
@@ -108,8 +150,8 @@
             "name": "[parameters('queueStorageAccountsName')]",
             "location": "[parameters('location')]",
             "sku": {
-                "name": "[variables(concat('sizing-', parameters('deploymentType'))).storageSku]",
-                "tier": "[variables(concat('sizing-', parameters('deploymentType'))).storageTier]"
+                "name": "[parameters('storageSku')]",
+                "tier": "[parameters('storageTier')]"
             },
             "kind": "StorageV2",
             "properties": {
@@ -131,7 +173,7 @@
                     },
                     "keySource": "Microsoft.Storage"
                 },
-                "accessTier": "[variables(concat('sizing-', parameters('deploymentType'))).accessTier]"
+                "accessTier": "[parameters('accessTier')]"
             }
         },
         {
@@ -142,7 +184,7 @@
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('queueStorageAccountsName'))]"
             ],
             "sku": {
-                "name": "[variables(concat('sizing-', parameters('deploymentType'))).storageSku]"
+                "name": "[parameters('storageSku')]"
             },
             "properties": {
                 "cors": {
@@ -164,9 +206,9 @@
             },
             "kind": "GlobalDocumentDB",
             "properties": {
-                "enableAutomaticFailover": "[variables(concat('sizing-', parameters('deploymentType'))).enableAutomaticFailover]",
-                "enableMultipleWriteLocations": "[variables(concat('sizing-', parameters('deploymentType'))).enableMultipleWriteLocations]",
-                "isVirtualNetworkFilterEnabled": "[variables(concat('sizing-', parameters('deploymentType'))).isVirtualNetworkFilterEnabled]",
+                "enableAutomaticFailover": "[parameters('enableAutomaticFailover')]",
+                "enableMultipleWriteLocations": "[parameters('enableMultipleWriteLocations')]",
+                "isVirtualNetworkFilterEnabled": "[parameters('isVirtualNetworkFilterEnabled')]",
                 "virtualNetworkRules": [],
                 "disableKeyBasedMetadataWriteAccess": false,
                 "databaseAccountOfferType": "Standard",
@@ -180,7 +222,7 @@
                         "locationName": "West Europe",
                         "provisioningState": "Succeeded",
                         "failoverPriority": 0,
-                        "isZoneRedundant": "[variables(concat('sizing-', parameters('deploymentType'))).isZoneRedundant]"
+                        "isZoneRedundant": "[parameters('isZoneRedundant')]"
                     }
                 ],
                 "capabilities": []
@@ -305,7 +347,7 @@
     },        
         {
             "name": "[variables('applicationInsightsName')]",
-            "condition": "[equals(variables(concat('sizing-', parameters('deploymentType'))).insights,'yes')]",
+            "condition": "[equals(parameters('insights'),'yes')]",
             "type": "Microsoft.Insights/components",
             "location": "[parameters('location')]",
             "apiVersion": "2014-04-01",
