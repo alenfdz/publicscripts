@@ -24,6 +24,24 @@
                 "description": "The name of the app function."
             }
         },
+        "appSku": {
+            "type": "string",
+            "metadata": {
+                "description": "The SKU of the app."
+            }
+        },
+        "appWorkerSize": {
+            "type": "string",
+            "metadata": {
+                "description": "The size of the worker for app function."
+            }
+        },
+        "appStorageAccountSize": {
+            "type": "string",
+            "metadata": {
+                "description": "The size of the storage space for app function."
+            }
+        },
         "databaseAccountsName": {
             "type": "string",
             "metadata": {
@@ -49,36 +67,7 @@
         }
     },
 
-    "variables": {
-        "appSku": "[variables(concat('sizing-', parameters('deploymentType'))).sku]",
-        "appWorkerSize": "[variables(concat('sizing-', parameters('deploymentType'))).workerSize]",
-        "appStorageAccountSize": "[variables(concat('sizing-', parameters('deploymentType'))).storageAccountSize]",
-        "sizing-dev":{
-            "sku": "S1",
-            "workerSize": "1",
-            "storageAccountSize": "Standard_LRS",
-            "insights": "no",
-            "enableAutomaticFailover": false,
-            "enableMultipleWriteLocations": false,
-            "isVirtualNetworkFilterEnabled": false,
-            "isZoneRedundant": false,
-            "storageSku": "Standard_LRS",
-            "storageTier": "Standard",
-            "accessTier": "cool"
-        },
-        "sizing-prod":{
-            "sku": "EP1",
-            "workerSize": "2",
-            "storageAccountSize": "Premium_LRS",
-            "insights": "yes",
-            "enableAutomaticFailover": true,
-            "enableMultipleWriteLocations": true,
-            "isVirtualNetworkFilterEnabled": true,
-            "isZoneRedundant": true,
-            "storageSku": "Standard_GRS",
-            "storageTier": "Premium",
-            "accessTier": "hot"
-        },
+    "variables":  {
         "functionAppName": "[parameters('appName')]",
         "queueName": "js-queue-items",
         "prodFunctionName": "producer",
@@ -97,7 +86,7 @@
             "location": "[parameters('location')]",
             "kind": "Storage",
             "sku": {
-                "name": "[variables('appStorageAccountSize')]"
+                "name": "[parameters('appStorageAccountSize')]"
             }
         },
         {
@@ -106,10 +95,10 @@
             "name": "[variables('hostingPlanName')]",
             "location": "[parameters('location')]",
             "sku":{
-                "name": "[variables('appSku')]"
+                "name": "[parameters('appSku')]"
             },
             "properties": {
-                "workerSize": "[variables('appWorkerSize')]",
+                "workerSize": "[parameters('appWorkerSize')]",
                 "numberOfWorkers": 1
             }
         },
@@ -325,5 +314,11 @@
                 "applicationId": "[variables('applicationInsightsName')]"
             }
         }
-    ]
+    ],
+    "outputs": {
+        "databasePrimaryKey": {
+            "type": "string",
+            "value": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', parameters('databaseAccountsName')), '2015-04-08').primaryMasterKey]"
+        }         
+    }
 }
