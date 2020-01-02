@@ -325,11 +325,5 @@
                 "applicationId": "[variables('applicationInsightsName')]"
             }
         }
-    ],
-    "outputs": {
-        "databasePrimaryKey": {
-            "type": "string",
-            "value": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', parameters('databaseAccountsName')), '2015-04-08').primaryMasterKey]"
-        }         
-    }
+    ]
 }
