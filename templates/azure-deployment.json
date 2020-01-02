@@ -61,25 +61,25 @@
             }
         },
         "enableAutomaticFailover": {
-            "type": "boolean",
+            "type": "bool",
             "metadata": {
                 "description": "Enable automatic failover for database."
             }
         },
         "enableMultipleWriteLocations": {
-            "type": "boolean",
+            "type": "bool",
             "metadata": {
                 "description": "Enable multiple write locations for database."
             }
         },
         "isVirtualNetworkFilterEnabled": {
-            "type": "boolean",
+            "type": "bool",
             "metadata": {
                 "description": "Enable Virtual network filter for database."
             }
         },
         "isZoneRedundant": {
-            "type": "boolean",
+            "type": "bool",
             "metadata": {
                 "description": "Zone redundancy for database."
             }
