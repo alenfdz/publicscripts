@@ -1,10 +1,9 @@
 {
-
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "hostingEnvironment": {
-            "type": "String",
+            "type": "string",
             "allowedValues": [
                 "linux",
                 "windows"
@@ -102,13 +101,13 @@
             }
         },
         "queueStorageAccountsName": {
-            "type": "String",
+            "type": "string",
             "metadata": {
                 "description": "The name of the storage account for the queue."
             }
         },
         "insights": {
-            "type": "String",
+            "type": "string",
             "metadata": {
                 "description": "Wether or not to enable application insights."
             }
@@ -341,7 +340,7 @@
                           "databaseName": "thingsdatabase",
                           "collectionName": "nodeitems",
                           "createIfNotExists": true,
-                          "connection": "[variables('databaseConnectionString')]",
+                          "connection": "[concat('AccountEndpoint=https://', parameters('databaseAccountsName'), '.documents.azure.com:443/;Accountkey=', listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', parameters('databaseAccountsName')), '2015-04-08').primaryMasterKey, ';')]",
                           "direction": "out"
                         }
                     ]
