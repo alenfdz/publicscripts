@@ -18,76 +18,40 @@
             ]
         },
         "appName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the app function."
-            }
+            "type": "string"
         },
         "appSku": {
-            "type": "string",
-            "metadata": {
-                "description": "The SKU of the app."
-            }
+            "type": "string"
         },
         "appWorkerSize": {
-            "type": "string",
-            "metadata": {
-                "description": "The size of the worker for app function."
-            }
+            "type": "string"
         },
         "appStorageAccountSize": {
-            "type": "string",
-            "metadata": {
-                "description": "The size of the storage space for app function."
-            }
+            "type": "string"
         },
         "storageSku": {
-            "type": "string",
-            "metadata": {
-                "description": "The size of the storage space for queue."
-            }
+            "type": "string"
         },
         "storageTier": {
-            "type": "string",
-            "metadata": {
-                "description": "The tier of the storage for queue."
-            }
+            "type": "string"
         },
         "accessTier": {
-            "type": "string",
-            "metadata": {
-                "description": "The access tier of the storage for queue."
-            }
+            "type": "string"
         },
         "enableAutomaticFailover": {
-            "type": "bool",
-            "metadata": {
-                "description": "Enable automatic failover for database."
-            }
+            "type": "bool"
         },
         "enableMultipleWriteLocations": {
-            "type": "bool",
-            "metadata": {
-                "description": "Enable multiple write locations for database."
-            }
+            "type": "bool"
         },
         "isVirtualNetworkFilterEnabled": {
-            "type": "bool",
-            "metadata": {
-                "description": "Enable Virtual network filter for database."
-            }
+            "type": "bool"
         },
         "isZoneRedundant": {
-            "type": "bool",
-            "metadata": {
-                "description": "Zone redundancy for database."
-            }
+            "type": "bool"
         },
         "databaseAccountsName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the database."
-            }
+            "type": "string"
         },
         "location": {
             "type": "string",
@@ -101,16 +65,10 @@
             }
         },
         "queueStorageAccountsName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the storage account for the queue."
-            }
+            "type": "string"
         },
         "insights": {
-            "type": "string",
-            "metadata": {
-                "description": "Wether or not to enable application insights."
-            }
+            "type": "string"
         }        
     },
 
