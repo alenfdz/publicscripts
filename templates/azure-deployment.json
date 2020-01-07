@@ -324,6 +324,10 @@
         "databasePrimaryKey": {
             "type": "string",
             "value": "[listKeys(resourceId('Microsoft.DocumentDb/databaseAccounts', parameters('databaseAccountsName')), '2015-04-08').primaryMasterKey]"
-        }         
+        },
+        "functionEndpoint":{
+            "type": "string",
+            "value": "[concat('https://', variables('functionAppName'), 'azurewebsites.net/api/', variables('prodFunctionName'))"
+        }        
     }
 }
