@@ -327,7 +327,7 @@
         },
         "functionEndpoint":{
             "type": "string",
-            "value": "[concat('https://', variables('functionAppName'), 'azurewebsites.net/api/', variables('prodFunctionName'))"
+            "value": "[concat('https://', variables('functionAppName'), 'azurewebsites.net/api/', variables('prodFunctionName'))]"
         }        
     }
 }
