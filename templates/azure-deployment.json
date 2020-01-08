@@ -69,7 +69,13 @@
         },
         "insights": {
             "type": "string"
-        }        
+        },    
+        "resourcePrefix": {
+            "type": "string"
+        },
+        "tag_owner": {
+            "type": "string"
+        }                      
     },
 
     "variables":  {
@@ -165,7 +171,8 @@
             "location": "[parameters('location')]",
             "tags": {
                 "defaultExperience": "Azure Cosmos DB for MongoDB API",
-                "hidden-cosmos-mmspecial": ""
+                "hidden-cosmos-mmspecial": "",
+                "Owner": "[parameters('tag_owner')]"
             },
             "kind": "GlobalDocumentDB",
             "properties": {
@@ -189,7 +196,7 @@
                     }
                 ],
                 "capabilities": []
-            }
+            }           
         },
         {
             "apiVersion": "2018-11-01",
@@ -234,7 +241,10 @@
                         }
                     ]
                 }
-            }
+            },
+            "tags": {
+                "Owner": "[parameters('tag_owner')]"
+            }            
         },
             {
                 "apiVersion": "2018-11-01",
