@@ -23,6 +23,9 @@
         "dnsNameforLBIP": {
             "type": "string"
         },
+        "networkInterfaceName": {
+            "type": "string"
+        },
         "networkSecurityGroupName": {
             "type": "string"
         },
