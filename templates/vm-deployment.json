@@ -160,9 +160,6 @@
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-04-01",
             "location": "[parameters('location')]",
-            "dependsOn": [
-                "linkedTemplate"
-            ],
             "properties": {
                 "addressSpace": {
                     "addressPrefixes":[
