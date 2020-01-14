@@ -17,6 +17,9 @@
         "publicIPAddressType": {
             "type": "string"
         },
+        "lbNodeProbeID":{
+            "type": "string"
+        },
         "publicIpAddressName": {
             "type": "string"
         },
