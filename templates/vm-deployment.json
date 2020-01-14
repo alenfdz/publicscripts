@@ -1,0 +1,438 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "availabilitySetName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "virtualNetworkName": {
+            "type": "string"
+        },
+        "LBPublicIPAddressName": {
+            "type": "string"
+        },
+        "publicIPAddressType": {
+            "type": "string"
+        },
+        "dnsNameforLBIP": {
+            "type": "string"
+        },
+        "networkSecurityGroupName": {
+            "type": "string"
+        },
+        "networkSecurityGroupRules": {
+            "type": "array"
+        },
+        "tag_owner": {
+            "type": "string"
+        },
+        "addressPrefixes": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "subaddressPrefixes": {
+            "type": "string"
+        },
+        "publicIpAddressSku": {
+            "type": "string"
+        },
+        "numberOfInstances": {
+            "type": "int"
+        },
+        "loadBalancerName": {
+            "type": "string"
+        },
+        "subnetRef": {
+            "type": "string"
+        }, 
+        "lbID": {
+            "type": "string"
+        },
+        "nsgId": {
+            "type": "string"
+        }, 
+        "LBPublicIPAddressID": {
+            "type": "string"
+        }, 
+        "frontEndIPConfigID": {
+            "type": "string"
+        }, 
+        "frontendPort1": {
+            "type": "int"
+        },
+        "frontendPort2": {
+            "type": "int"
+        },
+        "lbPoolID": {
+            "type": "string"
+        },
+        "lbProbeID": {
+            "type": "string"
+        },
+        "virtualMachineSize": {
+            "type": "string"
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "string"
+        },
+        "virtualMachineName": {
+            "type": "string"
+        },
+        "_artifactsLocation": {
+            "type": "string"
+        },
+        "nodeUrl": {
+            "type": "string"
+        },
+        "databaseURI": {
+            "type": "string"
+        },
+        "databasePrimaryKey": {
+            "type": "string"
+        }
+    },
+    "variables": {
+
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[parameters('availabilitySetName')]",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/VirtualNetworks/', parameters('virtualNetworkName'))]"
+            ],
+            "properties": {
+              "platformFaultDomainCount": 2,
+              "platformUpdateDomainCount": 2
+            },
+            "sku":{
+                "name": "Aligned"
+            } 
+          },
+          {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('LBPublicIPAddressName')]",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/VirtualNetworks/', parameters('virtualNetworkName'))]"
+            ],            
+            "properties": {
+              "publicIPAllocationMethod": "[parameters('publicIPAddressType')]",
+              "dnsSettings": {
+                "domainNameLabel": "[parameters('dnsNameforLBIP')]"
+              }
+            }
+          },                  
+        {
+            "name": "[parameters('networkSecurityGroupName')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-02-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/VirtualNetworks/', parameters('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "securityRules": "[parameters('networkSecurityGroupRules')]"
+            },
+            "tags": {
+                "Owner": "[parameters('tag_owner')]"
+            }
+        },
+        {
+            "name": "[parameters('virtualNetworkName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-04-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "linkedTemplate"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes":[
+                        "[parameters('addressPrefixes')]"
+                    ]
+                    
+                },
+                "subnets": [
+                        {
+                            "name": "[parameters('subnetName')]",
+                            "properties": {
+                                "addressPrefix": "[parameters('subaddressPrefixes')]"
+                            }
+                        }
+                ]
+            },
+            "tags": {
+                "Owner": "[parameters('tag_owner')]"
+            }
+        },
+        {
+            "name": "[concat(parameters('publicIpAddressName'), '-', copyIndex())]",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "2019-02-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/VirtualNetworks/', parameters('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "publicIpAllocationMethod": "[parameters('publicIpAddressType')]"
+            },
+            "sku": {
+                "name": "[parameters('publicIpAddressSku')]"
+            },
+            "copy": {
+                "name": "publicipcopy",
+                "count": "[parameters('numberOfInstances')]",
+                "mode": "Serial",
+                "batchSize": 1
+            },
+            "tags": {
+                "Owner": "[parameters('tag_owner')]"
+            }
+        },
+        {
+            "name": "[concat(parameters('networkInterfaceName'), '-', copyIndex())]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkSecurityGroups/', parameters('networkSecurityGroupName'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
+                "[concat('Microsoft.Network/publicIpAddresses/', concat(parameters('publicIpAddressName'), '-', copyIndex()))]",
+                "[concat('Microsoft.Network/loadBalancers/', parameters('loadBalancerName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', concat(parameters('publicIpAddressName'), '-', copyIndex()))]"
+                            },
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                  "id": "[concat(parameters('lbID'), '/backendAddressPools/BackendPool1')]"
+                                }
+                              ],
+                              "loadBalancerInboundNatRules": [
+                                {
+                                  "id": "[concat(parameters('lbID'),'/inboundNatRules/SSH-VM', copyIndex())]"
+                                }
+                              ]       
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[parameters('nsgId')]"
+                }
+            },
+            "copy": {
+                "name": "networkifcopy",
+                "count": "[parameters('numberOfInstances')]"
+            },
+            "tags": {
+                "Owner": "[parameters('tag_owner')]"
+            }
+        },
+        {
+            "name": "[parameters('loadBalancerName')]",
+            "type": "Microsoft.Network/loadBalancers",
+            "apiVersion": "2015-05-01-preview",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+              "[concat('Microsoft.Network/publicIPAddresses/', parameters('LBPublicIPAddressName'))]"
+            ],
+            "properties": {
+              "frontendIPConfigurations": [
+                {
+                  "name": "LoadBalancerFrontEnd",
+                  "properties": {
+                    "publicIPAddress": {
+                      "id": "[parameters('LBPublicIPAddressID')]"
+                    }
+                  }
+                }
+              ],
+              "backendAddressPools": [
+                {
+                  "name": "BackendPool1"
+                }
+              ],
+              "inboundNatRules": [
+                {
+                  "name": "SSH-VM0",
+                  "properties": {
+                    "frontendIPConfiguration": {
+                      "id": "[parameters('frontEndIPConfigID')]"
+                    },
+                    "protocol": "Tcp",
+                    "frontendPort": "[parameters('frontendPort1')]",
+                    "backendPort": 22,
+                    "enableFloatingIP": false
+                  }
+                },
+                {
+                  "name": "SSH-VM1",
+                  "properties": {
+                    "frontendIPConfiguration": {
+                      "id": "[parameters('frontEndIPConfigID')]"
+                    },
+                    "protocol": "Tcp",
+                    "frontendPort": "[parameters('frontendPort2')]",
+                    "backendPort": 22,
+                    "enableFloatingIP": false 
+                  }
+                }
+              ],
+              "loadBalancingRules": [
+                {
+                  "name": "LBRule",
+                  "properties": {
+                    "frontendIPConfiguration": {
+                      "id": "[parameters('frontEndIPConfigID')]"
+                    },
+                    "backendAddressPool": {
+                      "id": "[parameters('lbPoolID')]"
+                    },
+                    "protocol": "Tcp",
+                    "frontendPort": 80,
+                    "backendPort": 80,
+                    "enableFloatingIP": false,
+                    "idleTimeoutInMinutes": 5,
+                    "probe": {
+                      "id": "[parameters('lbProbeID')]"
+                    }
+                  }
+                },
+                {
+                    "name": "NodeRule",
+                    "properties": {
+                      "frontendIPConfiguration": {
+                        "id": "[parameters('frontEndIPConfigID')]"
+                      },
+                      "backendAddressPool": {
+                        "id": "[parameters('lbPoolID')]"
+                      },
+                      "protocol": "Tcp",
+                      "frontendPort": 3000,
+                      "backendPort": 3000,
+                      "enableFloatingIP": false,
+                      "idleTimeoutInMinutes": 5,
+                      "probe": {
+                        "id": "[parameters('lbNodeProbeID')]"
+                      }
+                    }
+                  }                
+              ],
+              "probes": [
+                {
+                  "name": "httpProbe",
+                  "properties": {
+                    "protocol": "Tcp",
+                    "port": 80,
+                    "intervalInSeconds": 5,
+                    "numberOfProbes": 2
+                  }
+                },
+                {
+                    "name": "nodeProbe",
+                    "properties": {
+                      "protocol": "Tcp",
+                      "port": 3000,
+                      "intervalInSeconds": 5,
+                      "numberOfProbes": 2
+                    }
+                  }               
+              ]
+            }
+          },
+        {
+            "name": "[concat(parameters('virtualMachineName'), '-', copyIndex())]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', concat(parameters('networkInterfaceName'), '-', copyIndex()))]"
+            ],
+            "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets',parameters('availabilitySetName'))]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('virtualMachineSize')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "OpenLogic",
+                        "offer": "CentOS",
+                        "sku": "7.7",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('networkInterfaceName'), '-', copyIndex()))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[concat(parameters('virtualMachineName'), copyIndex())]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                }
+            },
+            "copy": {
+                "name": "vmcopy",
+                "count": "[parameters('numberOfInstances')]"
+            },
+            "tags": {
+                "Owner": "[parameters('tag_owner')]"
+            },
+            "resources": [
+                {
+                    "type": "extensions",
+                    "name": "[concat(parameters('virtualMachineName'), '-', copyIndex(), 'installscript')]",
+                    "apiVersion": "2017-03-30",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'), '-', copyIndex())]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Extensions",
+                        "type": "CustomScript",
+                        "typeHandlerVersion": "2.0",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "fileUris": [
+                                "[concat(parameters('_artifactsLocation'), '/scripts/install.sh')]"
+                            ],
+                            "commandToExecute": "[concat('bash install.sh ', parameters('nodeUrl'), ' ', parameters('databaseURI'), ' ', parameters('databasePrimarykey'), ' ', parameters('_artifactsLocation'))]"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
