@@ -106,6 +106,9 @@
         },
         "databasePrimaryKey": {
             "type": "string"
+        },
+        "osDiskType": {
+            "type": "string"
         }
     },
     "variables": {
