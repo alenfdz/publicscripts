@@ -109,6 +109,12 @@
         },
         "osDiskType": {
             "type": "string"
+        },
+        "useSSHauthOnly": {
+            "type": "string"
+        },
+        "sshKey": {
+            "type": "string"
         }
     },
     "variables": {
@@ -409,7 +415,18 @@
                 "osProfile": {
                     "computerName": "[concat(parameters('virtualMachineName'), copyIndex())]",
                     "adminUsername": "[parameters('adminUsername')]",
-                    "adminPassword": "[parameters('adminPassword')]"
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": "[if('useSSHauthOnly', true, false)]",
+                        "ssh":{
+                            "publicKeys": [
+                                {
+                                    "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                                    "keyData": "[parameters('sshKey)]"
+                                }
+                            ]
+                        }
+                    }
                 }
             },
             "copy": {
