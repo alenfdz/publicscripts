@@ -17,6 +17,9 @@
         "publicIPAddressType": {
             "type": "string"
         },
+        "publicIpAddressName": {
+            "type": "string"
+        },
         "dnsNameforLBIP": {
             "type": "string"
         },
