@@ -417,7 +417,7 @@
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]",
                     "linuxConfiguration": {
-                        "disablePasswordAuthentication": "[variables('useSSHauthOnly')]",
+                        "disablePasswordAuthentication": "[parameters('useSSHauthOnly')]",
                         "ssh":{
                             "publicKeys": [
                                 {
