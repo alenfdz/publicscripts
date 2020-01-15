@@ -111,7 +111,7 @@
             "type": "string"
         },
         "useSSHauthOnly": {
-            "type": "string"
+            "type": "bool"
         },
         "sshKey": {
             "type": "string"
@@ -417,7 +417,7 @@
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]",
                     "linuxConfiguration": {
-                        "disablePasswordAuthentication": "[if(parameters('useSSHauthOnly'), true, false)]",
+                        "disablePasswordAuthentication": "[parameters('useSSHauthOnly')]",
                         "ssh":{
                             "publicKeys": [
                                 {
