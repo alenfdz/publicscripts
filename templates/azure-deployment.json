@@ -88,7 +88,7 @@
         "applicationInsightsName": "[concat(parameters('appName'), '-insights')]",
         "databaseConnectionString": "[concat(parameters('databaseAccountsName'), '_DOCUMENTDB')]",
         "functionAppResourceId": "[resourceId('Microsoft.Web/site', variables('functionAppName'))]",
-        "service_mytesttdapi_name": "[concat('myapi', uniquestring(resourceGroup().id))]"
+        "service_mytesttdapi_name": "tdtestapi99"
     },
 
     "resources": [
