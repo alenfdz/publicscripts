@@ -429,7 +429,7 @@
             "properties": {
                 "displayName": "[variables('prodFunctionName')]",
                 "method": "POST",
-                "urlTemplate": "[concat(']', variables('prodFunctionName')]",
+                "urlTemplate": "[concat(']', variables('prodFunctionName'))]",
                 "templateParameters": [],
                 "responses": []
             }
