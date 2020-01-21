@@ -332,17 +332,6 @@
             }
         },
         {
-            "name": "[variables('applicationInsightsName')]",
-            "condition": "[equals(parameters('insights'),'yes')]",
-            "type": "Microsoft.Insights/components",
-            "location": "[parameters('location')]",
-            "apiVersion": "2014-04-01",
-            "kind": "other",
-            "properties": {
-                "applicationId": "[variables('applicationInsightsName')]"
-            }
-        },
-        {
             "type": "Microsoft.ApiManagement/service",
             "apiVersion": "2019-01-01",
             "name": "[variables('service_mytesttdapi_name')]",
