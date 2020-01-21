@@ -399,13 +399,6 @@
                 "url": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api')]",
                 "protocol": "http",
                 "resourceId": "[concat('https://management.azure.com', variables('functionAppResourceId'))]",
-                "credentials": {
-                    "header": {
-                        "x-functions-key": [
-                            "[concat('{{', variables('functionAppName'), '-key}}')]"
-                        ]
-                    }
-                }
             }
         },
         {
