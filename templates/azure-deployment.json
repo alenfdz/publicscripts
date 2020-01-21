@@ -395,14 +395,14 @@
                 "[resourceId('Microsoft.ApiManagement/service', variables('service_mytesttdapi_name'))]"
             ],
             "properties": {
-                "description": "variables('functionAppName')",
+                "description": "[variables('functionAppName')]",
                 "url": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api')]",
                 "protocol": "http",
                 "resourceId": "[concat('https://management.azure.com', variables('functionAppResourceId'))]",
                 "credentials": {
                     "header": {
                         "x-functions-key": [
-                            "[concat('{{', variables('mytestapprogue141'), '-key}}')]"
+                            "[concat('{{', variables('functionAppName'), '-key}}')]"
                         ]
                     }
                 }
