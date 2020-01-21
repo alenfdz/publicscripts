@@ -86,7 +86,8 @@
         "hostingPlanName": "[concat(parameters('appName'), '-plan')]",
         "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'functions')]",
         "applicationInsightsName": "[concat(parameters('appName'), '-insights')]",
-        "databaseConnectionString": "[concat(parameters('databaseAccountsName'), '_DOCUMENTDB')]"
+        "databaseConnectionString": "[concat(parameters('databaseAccountsName'), '_DOCUMENTDB')]",
+        "functionAppResourceId": "[resourceId('Microsoft.Web/site', variables('functionAppName'))]"
     },
 
     "resources": [
@@ -328,7 +329,125 @@
             "properties": {
                 "applicationId": "[variables('applicationInsightsName')]"
             }
-        }
+        },
+        {
+            "name": "[variables('applicationInsightsName')]",
+            "condition": "[equals(parameters('insights'),'yes')]",
+            "type": "Microsoft.Insights/components",
+            "location": "[parameters('location')]",
+            "apiVersion": "2014-04-01",
+            "kind": "other",
+            "properties": {
+                "applicationId": "[variables('applicationInsightsName')]"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service",
+            "apiVersion": "2019-01-01",
+            "name": "[parameters('service_mytesttdapi_name')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Developer",
+                "capacity": 1
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+            ],
+            "properties": {
+                "publisherEmail": "alen@tdsolutionfactory.onmicrosoft.com",
+                "publisherName": "mytdtest",
+                "notificationSenderEmail": "apimgmt-noreply@mail.windowsazure.com",
+                "hostnameConfigurations": [
+                    {
+                        "type": "Proxy",
+                        "hostName": "[concat(parameters('service_mytesttdapi_name'), '.azure-api.net')]",
+                        "negotiateClientCertificate": false,
+                        "defaultSslBinding": true
+                    }
+                ],
+                "customProperties": {
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": "False"
+                },
+                "virtualNetworkType": "None"
+            }            
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_mytesttdapi_name'), '/', variables('functionAppName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_mytesttdapi_name'))]"
+            ],
+            "properties": {
+                "displayName": "variables('functionAppName')",
+                "apiRevision": "1",
+                "description": "[concat('Import from \"', variables('functionAppName'), '\" Function App",
+                "subscriptionRequired": false,
+                "path": "variables('functionAppName')",
+                "protocols": [
+                    "https"
+                ],
+                "isCurrent": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/backends",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_mytesttdapi_name'), '/', variables('functionAppName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_mytesttdapi_name'))]"
+            ],
+            "properties": {
+                "description": "variables('functionAppName')",
+                "url": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api')]",
+                "protocol": "http",
+                "resourceId": "[concat('https://management.azure.com', variables('functionAppResourceId'))]",
+                "credentials": {
+                    "header": {
+                        "x-functions-key": [
+                            "[concat('{{', variables('mytestapprogue141'), '-key}}')]"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_mytesttdapi_name'), '/', variables('functionAppName'), '/post-producer')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_mytesttdapi_name'), variables('functionAppName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_mytesttdapi_name'))]"
+            ],
+            "properties": {
+                "displayName": "[variables('prodFunctionName')]",
+                "method": "POST",
+                "urlTemplate": "[concat(']', variables('prodFunctionName')]",
+                "templateParameters": [],
+                "responses": []
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_mytesttdapi_name'), '/', variables('functionAppName'), '/post-producer/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('service_mytesttdapi_name'), variables('functionAppName'), 'post-producer')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_mytesttdapi_name'), variables('functionAppName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_mytesttdapi_name'))]"
+            ],
+            "properties": {
+                "value": "[concat('<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service id=\"apim-generated-policy\" backend-id=\"', variables('functionAppName'), '\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
+            }
+        }        
     ],
     "outputs": {
         "databasePrimaryKey": {
