@@ -376,7 +376,7 @@
                 "[resourceId('Microsoft.ApiManagement/service', variables('service_mytesttdapi_name'))]"
             ],
             "properties": {
-                "displayName": "variables('functionAppName')",
+                "displayName": "[variables('functionAppName'])",
                 "apiRevision": "1",
                 "description": "[concat('Import from \"', variables('functionAppName'), '\" Function App",
                 "subscriptionRequired": false,
