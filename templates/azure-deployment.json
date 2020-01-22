@@ -398,7 +398,7 @@
                 "description": "[variables('functionAppName')]",
                 "url": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api')]",
                 "protocol": "http",
-                "resourceId": "[concat('https://management.azure.com', variables('functionAppResourceId'))]",
+                "resourceId": "[concat('https://management.azure.com', variables('functionAppResourceId'))]"
             }
         },
         {
