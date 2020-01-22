@@ -380,7 +380,7 @@
                 "apiRevision": "1",
                 "description": "[concat('Import from \"', variables('functionAppName'), '\" Function App",
                 "subscriptionRequired": false,
-                "path": "variables('functionAppName')",
+                "path": "[variables('functionAppName')]",
                 "protocols": [
                     "https"
                 ],
