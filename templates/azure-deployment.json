@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "hostingEnvironment": {
@@ -75,10 +75,9 @@
         },
         "tag_owner": {
             "type": "string"
-        }                      
+        }   
     },
-
-    "variables":  {
+    "variables": {
         "functionAppName": "[parameters('appName')]",
         "queueName": "js-queue-items",
         "prodFunctionName": "producer",
@@ -90,7 +89,6 @@
         "functionAppResourceId": "[resourceId('Microsoft.Web/site', variables('functionAppName'))]",
         "service_mytesttdapi_name": "tdtestapi99"
     },
-
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
@@ -412,7 +410,7 @@
             "properties": {
                 "displayName": "[variables('prodFunctionName')]",
                 "method": "POST",
-                "urlTemplate": "[concat(']', variables('prodFunctionName'))]",
+                "urlTemplate": "[concat('/', variables('prodFunctionName'))]",
                 "templateParameters": [],
                 "responses": []
             }
