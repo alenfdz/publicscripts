@@ -414,21 +414,7 @@
                 "templateParameters": [],
                 "responses": []
             }
-        },
-        {
-            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
-            "apiVersion": "2019-01-01",
-            "name": "[concat(variables('service_mytesttdapi_name'), '/', variables('functionAppName'), '/post-producer/policy')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service/apis/operations', variables('service_mytesttdapi_name'), variables('functionAppName'), 'post-producer')]",
-                "[resourceId('Microsoft.ApiManagement/service/apis', variables('service_mytesttdapi_name'), variables('functionAppName'))]",
-                "[resourceId('Microsoft.ApiManagement/service', variables('service_mytesttdapi_name'))]"
-            ],
-            "properties": {
-                "value": "[concat('<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service id=\"apim-generated-policy\" backend-id=\"', variables('functionAppName'), '\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
-                "format": "xml"
-            }
-        }        
+        }      
     ],
     "outputs": {
         "databasePrimaryKey": {
