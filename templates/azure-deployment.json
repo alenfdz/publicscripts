@@ -371,7 +371,8 @@
             "apiVersion": "2019-01-01",
             "name": "[concat(variables('service_mytesttdapi_name'), '/', variables('functionAppName'))]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service', variables('service_mytesttdapi_name'))]"
+                "[resourceId('Microsoft.ApiManagement/service', variables('service_mytesttdapi_name'))]",
+                "[concat('Microsoft.ApiManagement/service/', variables('service_mytesttdapi_name'), '/backends/', variables('service_mytesttdapi_name'), '/', variables('functionAppName'))]"
             ],
             "properties": {
                 "displayName": "[variables('functionAppName'])",
@@ -396,7 +397,7 @@
                 "description": "[variables('functionAppName')]",
                 "url": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api')]",
                 "protocol": "http",
-                "resourceId": "[concat('https://management.azure.com', variables('functionAppResourceId'))]"
+                "resourceId": "resourceId('Microsoft.Web/sites', variables('functionAppName'))"
             }
         },
         {
