@@ -1,3 +1,3 @@
-param([string]$compName) 
+param([string]$fileName) 
 
-Rename-Computer -NewName $compName
+New-Item -path "c:\\cfn\" -Name $fileName -ItemType "file" -Value "testlol2"
